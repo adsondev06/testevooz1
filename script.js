@@ -170,12 +170,12 @@ function imprimirDriver(driver) {
                 background-color: white; /* Garante fundo branco */
             }
             h1 {
-                font-size: 30px; /* Tamanho grande para a etiqueta */
+                font-size: 35px; /* Tamanho grande para a etiqueta */
                 font-weight: bold;
                 text-align: center;
                 border: 2px solid black; /* Simula borda de etiqueta */
                 padding: 20px;
-                width: 60%; /* Controla o tamanho da etiqueta */
+                width: 65%; /* Controla o tamanho da etiqueta */
                 margin: 0; /* Remove margem para centrar */
             }
             @media print {
