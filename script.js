@@ -175,7 +175,7 @@ function imprimirDriver(driver) {
                 text-align: center;
                 border: 2px solid black; /* Simula borda de etiqueta */
                 padding: 20px;
-                width: 80%; /* Controla o tamanho da etiqueta */
+                width: 60%; /* Controla o tamanho da etiqueta */
                 margin: 0; /* Remove margem para centrar */
             }
             @media print {
