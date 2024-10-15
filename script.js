@@ -53,6 +53,9 @@ function buscarPorCodigo() {
         // Chama a função de fala para anunciar o resultado
         speakText(`${resultado.driver}`);
 
+        // Chama a função de impressão
+        imprimirDriver(resultado.driver);
+
     } else {
         resultadosDiv.innerHTML = "Nenhum resultado encontrado.";
     }
@@ -66,9 +69,9 @@ function buscarPorCodigo() {
 function speakText(text) {
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pt-BR'; // Define o idioma para português do Brasil
-    utterance.rate = 1.5; // Aumenta a velocidade da fala (padrão é 1,0)
-    utterance.pitch = 1.3; // Torna o tom da fala mais suave e agudo (padrão é 1,0)
+    utterance.lang = 'pt-BR'; 
+    utterance.rate = 2.0;
+    utterance.pitch = 1.3; 
 
     // Fala o texto
     synth.speak(utterance);
@@ -77,7 +80,7 @@ function speakText(text) {
 // Função para atualizar o histórico de buscas na tela
 function atualizarHistorico() {
     const listaHistorico = document.getElementById("lista-historico");
-    listaHistorico.innerHTML = ""; // Limpa o histórico anterior
+    listaHistorico.innerHTML = "";
 
     historicoBuscas.forEach(item => {
         const li = document.createElement("li");
@@ -90,7 +93,7 @@ function atualizarHistorico() {
 function filtrarHistorico() {
     const filtro = document.getElementById("filtro").value.toLowerCase();
     const listaHistorico = document.getElementById("lista-historico");
-    listaHistorico.innerHTML = ""; // Limpa a lista atual
+    listaHistorico.innerHTML = "";
 
     // Filtra os registros que correspondem ao filtro
     const historicoFiltrado = historicoBuscas.filter(item => {
@@ -102,7 +105,7 @@ function filtrarHistorico() {
     historicoFiltrado.sort((a, b) => {
         const numeroA = parseInt(a.driver.match(/\d+/)[0], 10);
         const numeroB = parseInt(b.driver.match(/\d+/)[0], 10);
-        return numeroA - numeroB; // Compara os números para ordenar
+        return numeroA - numeroB;
     });
 
     // Exibe os registros filtrados e ordenados
@@ -128,7 +131,7 @@ function gerarXLSX() {
             const numeroB = parseInt(b.driver.match(/\d+/)[0], 10);
             return numeroA - numeroB;
         })
-        : historicoBuscas; // Caso contrário, exporta tudo
+        : historicoBuscas;
 
     // Adiciona os dados do histórico na planilha
     const worksheetData = [
@@ -143,12 +146,72 @@ function gerarXLSX() {
     XLSX.writeFile(workbook, "historico_buscas.xlsx");
 }
 
+// Função para imprimir apenas o nome do driver em formato de etiquetadora
+function imprimirDriver(driver) {
+    // Criar um iframe para impressão
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    document.body.appendChild(iframe);
+
+    // Criar o conteúdo do iframe
+    const estiloEtiquetadora = `
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                font-family: "Arial", sans-serif;
+                overflow: hidden; /* Impede rolagem */
+                background-color: white; /* Garante fundo branco */
+            }
+            h1 {
+                font-size: 30px; /* Tamanho grande para a etiqueta */
+                font-weight: bold;
+                text-align: center;
+                border: 2px solid black; /* Simula borda de etiqueta */
+                padding: 20px;
+                width: 80%; /* Controla o tamanho da etiqueta */
+                margin: 0; /* Remove margem para centrar */
+            }
+            @media print {
+                body {
+                    width: 100%; /* Controla a largura da impressão */
+                    height: 100%; /* Controla a altura da impressão */
+                }
+            }
+        </style>
+    `;
+
+    const conteudo = `${estiloEtiquetadora}<h1>${driver}</h1>`;
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(conteudo);
+    doc.close();
+
+    // Chama a impressão
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+
+    // Remove o iframe após a impressão
+    iframe.parentNode.removeChild(iframe);
+}
+
 // Adiciona evento de busca ao pressionar a tecla Enter
 document.getElementById("codigo").addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
         buscarPorCodigo(); // Chama a função de busca ao pressionar Enter
     }
 });
+
+// Mantém o foco no input a cada 2 segundos
+setInterval(() => {
+    document.getElementById("codigo").focus();
+}, 2000);
 
 // Alerta de confirmação ao recarregar a página
 window.addEventListener('beforeunload', function (event) {
